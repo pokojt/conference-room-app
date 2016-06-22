@@ -1,0 +1,14 @@
+tutorial: https://dev.outlook.com/restapi/tutorial/node
+github repository: https://github.com/jasonjoh/node-tutorial
+
+
+Exchange Account: taylorp@r-west.com
+App registration name: conference-room-app
+App ID: 7dabb801-6f5a-403e-9083-f8b31437691f
+
+Secrets:
+password: JRWe2tzgivBGsWbvcbg4Ze3
+private key: 867B2A3F19FC809D06D902019C1A4C47D1A36DAA
+
+
+redirect URI: http://localhost:8000/authorize
