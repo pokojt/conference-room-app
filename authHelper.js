@@ -13,6 +13,7 @@ var redirectUri = "http://localhost:8000/authorize";
 
 // The scopes the app requires
 var scopes = [ "openid",
+               "offline_access",
                "profile",
                "https://outlook.office.com/mail.read",
                "https://outlook.office.com/calendars.readwrite" ];
@@ -20,7 +21,7 @@ var scopes = [ "openid",
 
 function getAuthUrl() {
   var returnVal = oauth2.authCode.authorizeURL({
-    redirect_uri: "http://localhost:8000/authorize",
+    redirect_uri: redirectUri,
     scope: scopes.join(" ")
   });
   console.log("Generated auth url: " + returnVal);
@@ -30,6 +31,7 @@ function getAuthUrl() {
 exports.getAuthUrl = getAuthUrl;
 
 
+// Takes authorization code and creates the access token
 function getTokenFromCode(auth_code, callback, response) {
   var token;
   oauth2.authCode.getToken({
@@ -51,18 +53,11 @@ function getTokenFromCode(auth_code, callback, response) {
 
 exports.getTokenFromCode = getTokenFromCode;
 
-function getEmailFromIdToken(id_token) {
-  // JWT is in three parts, separated by a '.'
-  var token_parts = id_token.split('.');
-  
-  // Token content is in the second part, in urlsafe base64
-  var encoded_token = new Buffer(token_parts[1].replace("-", "_").replace("+", "/"), 'base64');
-  
-  var decoded_token = encoded_token.toString();
-  
-  var jwt = JSON.parse(decoded_token);
-  
-  // Email is in the preferred_username field
-  return jwt.preferred_username
+
+
+function refreshAccessToken(refreshToken, callback) {
+  var tokenObj = oauth2.accessToken.create({refresh_token: refreshToken});
+  tokenObj.refresh(callback);
 }
-exports.getEmailFromIdToken = getEmailFromIdToken;
+
+exports.refreshAccessToken = refreshAccessToken;

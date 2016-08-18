@@ -1,0 +1,17 @@
+{
+  "name": "conference-room-app",
+  "version": "1.0.0",
+  "description": "Internal application for R/West",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "outlook",
+    "microsoft"
+  ],
+  "dependencies": {
+    "node-outlook": "^1.1.6",
+    "simple-oauth2": "^0.7.0"
+  }
+}
