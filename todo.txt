@@ -5,7 +5,8 @@ TO DO
 - filter calendar events by TODAY's events only
 - format start / end dates
 - add ability to add / edit / delete events 
-- fix route to calendar
+
+
 - figure out how to link entire html files in index.js rather than typing all of the html into the response.write function 
 - Update readme
 - figure out pathing issues to have better project file structure

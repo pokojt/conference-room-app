@@ -4,6 +4,7 @@ var server = require("./server");
 var router = require("./router");
 var authHelper = require("./authHelper");
 var outlook = require("node-outlook");
+var moment = require("moment");
 
 var handle = {};
 handle["/"] = home;
@@ -135,12 +136,12 @@ function calendar(response, request) {
     console.log('Email found in cookie: ', email);
   if (token) {
     response.writeHead(200, {"Content-Type": "text/html"});
-    response.write('<div><h1>Your Calendar</h1></div>');
+    response.write("<div><h1>Today's Events</h1></div>");
     
     var queryParams = {
-      '$select': 'Subject,Start,End',
+      '$select': 'Subject,Start,End,Attendees,BodyPreview',
       '$orderby': 'Start/DateTime desc',
-      '$top': 10
+      '$top': 30
     };
     
     // Set the API endpoint to use the v2.0 endpoint
@@ -159,18 +160,24 @@ function calendar(response, request) {
           response.end();
         }
         else if (result) {
+          var today = moment().format("YYYY-MM-DD").toString();
+          console.log(result);
           console.log('getEvents returned ' + result.value.length + ' events.');
-          response.write('<table><tr><th>Subject</th><th>Start</th><th>End</th></tr>');
-          result.value.forEach(function(event) {
-            console.log('  Subject: ' + event.Subject);
-            response.write('<tr><td>' + event.Subject + 
-              '</td><td>' + event.Start.DateTime.toString() +
-              '</td><td>' + event.End.DateTime.toString() + '</td></tr>');
-          });
+          console.log("Today is " + today);
+          response.write('<div class="eventsWrapper"><table><tr><th>Subject</th><th>Start</th><th>End</th><th>Attendees</th><th>Summary</th></tr>');
           
-          response.write('</table>');
+          result.value.forEach(function(event) {
+            if (event.Start.DateTime.includes(today)) {
+              console.log('  Subject: ' + event.Subject);
+              response.write('<tr><td>' + event.Subject + 
+                '</td><td>' + event.Start.DateTime.toString() +
+                '</td><td>' + event.End.DateTime.toString() + '</td><td>' + event.Attendees[0][1] + '</td><td>' + event.BodyPreview + '</td></tr>');
+            }
+          });
+          response.write('</table></div>');
           response.end();
         }
+        // code here for new event? outlook.calendar.createEvent?
       });
 	}
   else {
@@ -179,4 +186,5 @@ function calendar(response, request) {
     response.end();
   }
 }
+
 
