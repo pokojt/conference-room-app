@@ -11,7 +11,9 @@
     "microsoft"
   ],
   "dependencies": {
+    "file-system": "^2.2.1",
     "node-outlook": "^1.1.6",
+    "path": "^0.12.7",
     "simple-oauth2": "^0.7.0"
   }
 }

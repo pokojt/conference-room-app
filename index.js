@@ -5,6 +5,28 @@ var router = require("./router");
 var authHelper = require("./authHelper");
 var outlook = require("node-outlook");
 var moment = require("moment");
+var fs = require('fs');
+
+// below code is added to get css file to work //
+
+var cssFile;
+
+fs.readFile('public/styles.css', function(err, data) {
+  if(err) {
+    throw err;
+  }
+  cssFile = data;
+});
+
+
+var htmlFile;
+
+fs.readFile('index.html', function(err, data) {
+  if(err) {
+    throw err;
+  }
+  htmlFile = data;
+});
 
 var handle = {};
 handle["/"] = home;
@@ -128,6 +150,19 @@ function getAccessToken(request, response, callback) {
   }
 }
 
+
+
+var timeFormat = function(giventime) {
+  var timeInt = parseInt(giventime.substring(0-1));
+  var timeHalfTwo = giventime.substring(2-4);
+  if (timeInt > 12) {
+    var newTime = timeInt - 12;
+    return newTime.toString();
+  };
+  return newTime.concat(timeHalfTwo);
+}
+
+
 // reads token from cookie and makes call to Calendar API
 function calendar(response, request) {
     var token = getValueFromCookie('conference-room-app-token', request.headers.cookie);
@@ -136,8 +171,12 @@ function calendar(response, request) {
     console.log('Email found in cookie: ', email);
   if (token) {
     response.writeHead(200, {"Content-Type": "text/html"});
-    response.write("<div><h1>Today's Events</h1></div>");
+    response.write("<div class='pageWrapper'><div class='availabilitySection'></div><div class='eventsWrapper'><h1>Today's Events</h1>");
     
+
+    response.write(cssFile); 
+    // response.write(htmlFile);
+
     var queryParams = {
       '$select': 'Subject,Start,End,Attendees,BodyPreview',
       '$orderby': 'Start/DateTime desc',
@@ -164,17 +203,23 @@ function calendar(response, request) {
           console.log(result);
           console.log('getEvents returned ' + result.value.length + ' events.');
           console.log("Today is " + today);
-          response.write('<div class="eventsWrapper"><table><tr><th>Subject</th><th>Start</th><th>End</th><th>Attendees</th><th>Summary</th></tr>');
-          
+          response.write('<table><tr><th>Subject</th><th>Start</th><th>End</th><th>Attendees</th><th>Summary</th></tr>');
+
           result.value.forEach(function(event) {
+
+            
+            var startTime = event.Start.DateTime.toString().substring(11,16);
+            var endTime = event.End.DateTime.toString().substring(11,16);
+            // var formattedStartTime = timeFormat(startTime);
             if (event.Start.DateTime.includes(today)) {
               console.log('  Subject: ' + event.Subject);
+              console.log('Time: ' + event.Start.DateTime);
               response.write('<tr><td>' + event.Subject + 
-                '</td><td>' + event.Start.DateTime.toString() +
-                '</td><td>' + event.End.DateTime.toString() + '</td><td>' + event.Attendees[0][1] + '</td><td>' + event.BodyPreview + '</td></tr>');
+                '</td><td>' + startTime +
+                '</td><td>' + endTime + '</td><td>' + event.Attendees[0][1] + '</td><td>' + event.BodyPreview + '</td></tr>');
             }
           });
-          response.write('</table></div>');
+          response.write('</table></div></div>');
           response.end();
         }
         // code here for new event? outlook.calendar.createEvent?

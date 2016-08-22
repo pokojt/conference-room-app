@@ -1,0 +1,41 @@
+<style>
+
+
+
+body, html {
+	font-family: sans-serif;
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+}
+
+
+h1 {
+	color: red;
+}
+
+.pageWrapper {
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+}
+
+.availabilitySection {
+	height: 100vh;
+	width: 70vw;
+}
+
+.eventsWrapper {
+	height: 100vh;
+	width: 30vw;
+}
+
+
+
+
+
+
+
+
+
+</style>
